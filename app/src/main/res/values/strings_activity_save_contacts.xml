@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="save_contacts_button_text">Save Contacts</string>
+    <string name="contacts_list_edit_text_prompt">Enter List Name</string>
+</resources>

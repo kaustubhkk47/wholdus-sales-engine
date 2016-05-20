@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fetch_product_data_id_prompt">Enter product ID</string>
+    <string name="fetch_product_data_button_text">Get product data</string>
+    <string name="share_product_data_button_text">Share</string>
+    <string name="grant_write_access">Please provide permission to app</string>
+</resources>
