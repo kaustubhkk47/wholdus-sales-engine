@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -36,8 +39,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +72,8 @@ public class FetchProductData extends AppCompatActivity {
     String productURL;
     String minPricePerUnit;
     String imageURL;
+
+    PdfDocument document;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,9 +202,13 @@ public class FetchProductData extends AppCompatActivity {
                         imageName + "-" + imageNumber + ".jpg";
             }
 
+            String imageString = "*" + productName + "*" + "\r\n" + "Only " +"*" +minPricePerUnit+"*" + " Rs. per piece!"
+                    + "\r\n" + productURL ;
+
             mProductDisplay.setVisibility(View.VISIBLE);
-            mProductName.setText(productName);
+            mProductName.setText(imageString);
             mProductImageView.setVisibility(View.VISIBLE);
+            mShareProductData.setVisibility(View.VISIBLE);
             new DownloadImageTask(mProductImageView)
                     .execute(imageURL);
 
@@ -237,21 +256,39 @@ public class FetchProductData extends AppCompatActivity {
 
         } else {
 
-            String pathofBmp = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, productName, null);
-            Uri bmpUri = Uri.parse(pathofBmp);
+            //String pathofBmp = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, productName, null);
+            //Uri bmpUri = Uri.parse(pathofBmp);
+
+            //String pdfPath = "storage/6537-6363/Getting Started.pdf";
+            File pdfFile = new File(createPDF());
+            Uri bmpUri = Uri.fromFile(pdfFile);
 
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
             shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            shareIntent.setType("image/jpeg");
+            //shareIntent.setType("image/jpeg");
+
+            ArrayList<Uri> imageUriArray = new ArrayList<Uri>();
+            imageUriArray.add(bmpUri);
+            imageUriArray.add(bmpUri);
+            //shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUriArray);
 
             String imageString = "*" + productName + "*" + "\r\n" + "Only " +"*" +minPricePerUnit+"*" + " Rs. per piece!"
                     + "\r\n" + productURL ;
-            shareIntent.putExtra(Intent.EXTRA_TEXT, imageString);
+            //shareIntent.putExtra(Intent.EXTRA_TEXT, imageString);
+
+            ArrayList<CharSequence> stringArray = new ArrayList<CharSequence>();
+            String arr[] = {"Zero", "One"};
+            Collection l = Arrays.asList(arr);
+            stringArray.addAll(l);
+            //shareIntent.putCharSequenceArrayListExtra(Intent.EXTRA_TEXT, stringArray);
 
             //shareIntent.putExtra(Intent.EXTRA_TEXT, productURL);
             //shareIntent.setType("text/plain");
             shareIntent.setPackage("com.whatsapp");
+
+            shareIntent.setType("application/pdf");
+
             startActivity(shareIntent);
         }
     }
@@ -275,6 +312,29 @@ public class FetchProductData extends AppCompatActivity {
             }
 
         }
+    }
+
+    public String createPDF(){
+        String pdfName = "test.pdf";
+        document = new PdfDocument();
+        View content = findViewById(R.id.product_display_layout);
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(content.getWidth(), content.getHeight(), 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+        content.draw(page.getCanvas());
+        document.finishPage(page);
+        String externalStorage = Environment.getExternalStorageDirectory().getPath();
+        File outputFile = new File(externalStorage, pdfName);
+        try {
+            outputFile.createNewFile();
+            OutputStream out = new FileOutputStream(outputFile);
+            document.writeTo(out);
+            document.close();
+            out.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputFile.getPath();
     }
 
 }
