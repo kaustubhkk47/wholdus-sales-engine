@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.wholdus.salesengine.BuyerFilterPackage.BuyerFilter;
 import com.wholdus.salesengine.FetchProductDataPackage.FetchProductData;
 import com.wholdus.salesengine.R;
+import com.wholdus.salesengine.SaveContactsPackage.SaveContacts;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Context mContext = getApplicationContext();
-                Intent intent = new Intent(mContext, BuyerFilter.class);
+                Intent intent = new Intent(mContext, SaveContacts.class);
                 startActivity(intent);
             }
         });
