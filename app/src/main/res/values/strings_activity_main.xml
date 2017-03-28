@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="new_sharing_list_button_text">NEW SHARING LIST</string>
+    <string name="fetch_contacts_button_text">FETCH CONTACTS</string>
     <string name="share_products_button_text">SHARE PRODUCTS</string>
     <string name="error_no_product_id">Please enter product ID</string>
 </resources>
